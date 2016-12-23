@@ -1,0 +1,8 @@
+---
+
+  apache2_templates_dir: "vars/apache2/templates"
+  debian_apache_default_site: /etc/apache2/sites-enabled/000-default.conf
+  redhat_apache_default_site: /etc/httpd/conf.d/welcome.conf
+  apache_sebool_values:
+    - httpd_can_network_connect
+    - httpd_can_sendmail

@@ -1,0 +1,32 @@
+---
+
+  - name: install epel repository
+    yum: name=epel-release state=installed
+
+  - name: RedHat - installing apache and libsemanage-python
+    yum:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - httpd
+      - libsemanage-python
+
+  - name: RedHat - enabling apache on boot and starting
+    service:
+      name: "httpd"
+      state: started
+      enabled: yes
+
+  - name: Remove apache default config
+    file:
+      path: "{{ redhat_apache_default_site }}"
+      state: absent
+    notify:
+      - restart httpd
+
+  - name: Enable seboolean values for httpd
+    seboolean:
+      name: "{{ item }}"
+      state: on
+      persistent: yes
+    with_items: "{{ apache_sebool_values }}"

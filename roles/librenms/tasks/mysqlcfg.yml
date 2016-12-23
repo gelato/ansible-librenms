@@ -1,0 +1,40 @@
+---
+
+  - name: Enable and start mariadb
+    service: name=mariadb enabled=yes state=started
+    when: ansible_os_family == "RedHat"
+
+  - name: Enable and start mariadb
+    service: name=mysql enabled=yes state=started
+    when: ansible_os_family == "Debian"
+
+  - name: Create mysql database
+    mysql_db:
+      name: "{{ librenms_db_name }}"
+      encoding: utf8
+      state: present
+
+  - name: Create mysql user
+    mysql_user:
+      name: "{{ librenms_db_user }}"
+      host: "{{ item }}"
+      password: "{{ librenms_db_pass }}"
+      priv: "{{ librenms_db_name }}.*:ALL"
+      state: present
+    with_items:
+      - 127.0.0.1
+      - localhost
+
+  - name: Create my.cnf for librenms
+    template:
+      src: "{{ librenms_template_path }}/my.cnf.j2"
+      dest: "{{ librenms_path }}/.my.cnf"
+      owner: "{{ librenms_user }}"
+      group: "{{ librenms_user }}"
+      backup: yes
+
+  - name: Insert mysql database schema
+    shell: >-
+      chdir={{ librenms_path }}
+      creates={{ librenms_path }}/logs/schema.log
+      php {{ librenms_path }}/build-base.php > {{ librenms_path }}/logs/schema.log 2>&1

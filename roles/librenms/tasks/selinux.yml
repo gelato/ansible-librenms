@@ -1,0 +1,8 @@
+---
+
+- name: manage selinux contexts
+  command: semanage fcontext -a -t "{{ item.setype }}" "{{ item.path }}"
+  with_items:
+    - { path: "{{ librenms_rrdcached_socket }}", setype: httpd_sys_rw_content_t }
+    - { path: "{{ librenms_path }}/rrd(/.*)?",   setype: httpd_sys_rw_content_t }
+    - { path: "{{ librenms_path }}/log(/.*)?",   setype: httpd_log_t }

@@ -1,0 +1,34 @@
+---
+
+  - name: install prerequisites
+    apt: name={{ item }} state=installed
+    with_items: "{{ librenms_packages }}"
+
+  - name: enable php modules
+    command: phpenmod mcrypt
+
+  - name: disable apache site
+    command: a2dissite 000-default
+
+  - name: enable apache modules
+    command: a2enmod rewrite
+    notify: restart apache
+
+  - name: Template rrdcached configuration
+    template:
+      src: "{{ librenms_template_path }}/rrdcached.j2"
+      dest: /etc/default/rrdcached
+      owner: root
+      group: root
+      backup: yes
+    notify:
+      - restart apache
+      - restart rrdcached
+
+  - name: Create rrdcached socket directory
+    file:
+      path: /var/run/rrdcached
+      state: directory
+      owner: librenms
+      group: librenms
+      mode: 777

@@ -1,0 +1,41 @@
+---
+
+  librenms_packages:
+    - wget
+    - cronie
+    - fping
+    - graphviz
+    - graphviz-php
+    - git
+    - ImageMagick
+    - ipmitool
+    - jwhois
+    - mariadb
+    - mariadb-server
+    - mtr
+    - MySQL-python
+    - nagios-plugins-all
+    - net-snmp
+    - net-snmp-utils
+    - nmap
+    - php
+    - php-cli
+    - php-gd
+    - php-mysql
+    - php-snmp
+    - php-pear
+    - php-curl
+    - php-ldap
+    - php-mcrypt
+    - rrdtool
+    - subversion
+    - libvirt
+    - policycoreutils-python
+
+  librenms_user_groups: apache
+  apache_group: apache
+  librenms_directories:
+    - { path: /opt/librenms/logs, owner: apache, group: librenms, mode: "0755" }
+    - { path: /opt/librenms/rrd, owner: apache, group: librenms, mode: "0775" }
+  librenms_nagios_plugins_loc: /usr/lib64/nagios/plugins
+  librenms_mtr_loc: /usr/sbin/mtr

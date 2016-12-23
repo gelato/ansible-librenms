@@ -1,0 +1,85 @@
+---
+
+  librenms_template_path: "vars/librenms/templates"
+  librenms_site_style: light # dark, light, mono
+  librenms_page_refresh: 300
+  librenms_public_status: false # base stats made public on login page
+  librenms_path: /opt/librenms
+  librenms_user: librenms
+  librenms_git_url: https://github.com/librenms/librenms.git
+  librenms_devices: ["192.168.0.50", "192.168.1.50", "192.168.2.253"]
+  #
+  librenms_fping: /usr/bin/fping
+  librenms_fping_retries: 3
+  librenms_fping_timeout: 500
+  librenms_fping_count: 3
+  librenms_fping_millisec: 200
+  librenms_icmp_check: true
+  #
+  librenms_admin_name: admin
+  librenms_admin_pass: 12345678
+  librenms_admin_email: sysadmin@example.com
+  #
+  librenms_web_mouseover: "TRUE"
+  #
+  librenms_db_name: librenms
+  librenms_db_user: librenms
+  librenms_db_pass: S3B1qCe9n8Sy
+  librenms_db_host: localhost
+  #
+  librenms_services_enable: yes
+  librenms_nagios_plugins_loc: /usr/lib64/nagios/plugins
+  #
+  librenms_auth_mechanism: mysql
+  librenms_ldap_version: "3"
+  librenms_ldap_server: localhost
+  librenms_ldap_port: 389
+  librenms_ldap_starttls: require
+  librenms_ldap_prefix: "uid="
+  librenms_ldap_suffix: ",ou=People,dc=example,dc=com"
+  librenms_ldap_group: ""
+  librenms_ldap_groupbase: "ou=Group,dc=example,dc=com"
+  librenms_ldap_groupmemberattr: "memberUid"
+  librenms_ldap_emailattr: "mail"
+  librenms_auth_ldap_groups: []
+  #
+  librenms_email_backend: sendmail
+  librenms_email_from: "sysadmin@example.com"
+  librenms_email_user: "{{ librenms_user }}"
+  librenms_email_sendmail_path: /usr/sbin/sendmail
+  librenms_email_smtp_host: smtp.somehost.com
+  librenms_email_smtp_port: 465
+  librenms_email_smtp_timeout: 10
+  librenms_email_smtp_secure: "ssl"
+  librenms_email_smtp_username: "sysadmin@example.com"
+  librenms_email_smtp_password: "12345678"
+  #
+  librenms_alerts_bgp_whitelist: []
+  librenms_alerts_port_ifdown: "FALSE"
+  #
+  librenms_snmpwalk: "/usr/bin/snmpwalk"
+  librenms_snmpbulkwalk: "/usr/bin/snmpbulkwalk"
+  #
+  librenms_pollers_disabled: []
+  #
+  librenms_rancid_configs: []
+  #
+  librenms_collectd_dir: []
+  librenms_collectd_sock: unix:///var/run/collectd.sock
+  #
+  librenms_smokeping_dir: []
+  librenms_smokeping_pings: 20
+  #
+  librenms_poller_threads: 16
+  librenms_cron_jobs:
+    - "33  */6 * * *  librenms  /opt/librenms/discovery.php -h all > /dev/null 2>&1"
+    - "*/5 *   * * *  librenms  /opt/librenms/discovery.php -h new > /dev/null 2>&1"
+    - "*/5 *   * * *  librenms  /opt/librenms/cronic /opt/librenms/poller-wrapper.py {{ librenms_poller_threads }}"
+    - "15  6   * * *  librenms  /opt/librenms/daily.sh > /dev/null 2>&1"
+    - "*    *    * * *   librenms    /opt/librenms/alerts.php >> /dev/null 2>&1"
+    - "*/5  *    * * * librenms /opt/librenms/poll-billing.php >> /dev/null 2>&1"
+    - "01   *    * * * librenms /opt/librenms/billing-calculate.php >> /dev/null 2>&1"
+    - "*/5 * * * * librenms /opt/librenms/check-services.php >> /dev/null 2>&1"
+  librenms_pear_modules:
+    - Net_IPv4-1.3.4
+    - Net_IPv6-1.2.2b2

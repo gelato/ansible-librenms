@@ -1,0 +1,21 @@
+---
+
+  - name: Debian - installing apache2 package
+    apt:
+      name: "apache2"
+      state: present
+      update_cache: yes
+      cache_valid_time: 3600
+
+  - name: Debian - enabling apache on boot and starting
+    service:
+      name: "apache2"
+      state: started
+      enabled: yes
+
+  - name: Remove apache default config
+    file:
+      path: "{{ debian_apache_default_site }}"
+      state: absent
+    notify:
+      - restart apache

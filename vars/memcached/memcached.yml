@@ -1,0 +1,10 @@
+---
+
+  memcached_port: 11211
+  memcached_user: "memcached"
+  memcached_maxconn: 2048
+  memcached_cachesize: "128MB"
+  memcached_options: [] #RedHat only
+
+  memcached_templates_dir: "vars/memcached/templates"
+  

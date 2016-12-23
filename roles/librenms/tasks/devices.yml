@@ -1,0 +1,30 @@
+---
+- name: get list of discovered devices from librenms
+  command: mysql -ssNe "select hostname from devices" librenms
+  become_user: "{{ librenms_user }}"
+  vars:
+    ansible_ssh_pipelining: true
+  register: librenms_discovered_devices
+  changed_when: False
+
+- name: Add base devices to librenms for discovery
+  command: >-
+    chdir={{ librenms_path }}
+    php addhost.php {{ item }}
+  become_user: "{{ librenms_user }}"
+  vars:
+    ansible_ssh_pipelining: true
+  with_items: "{{ librenms_devices }}"
+  when: item not in librenms_discovered_devices.stdout_lines
+
+- name: Add client devices to librenms for discovery
+  command: >-
+    chdir={{ librenms_path }}
+    php addhost.php {{ item }} ap v3 {{ librenms_client_snmp_login }}
+    {{ librenms_client_snmp_password }} {{ librenms_client_snmp_password }}
+    md5 des udp
+  become_user: "{{ librenms_user }}"
+  vars:
+    ansible_ssh_pipelining: true
+  with_items: "{{ librenms_client_devices }}"
+  when: item not in librenms_discovered_devices.stdout_lines

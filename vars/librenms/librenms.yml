@@ -1,0 +1,6 @@
+---
+  librenms_devices: []
+    #Routers
+
+  librenms_client_devices: []
+    #Clients

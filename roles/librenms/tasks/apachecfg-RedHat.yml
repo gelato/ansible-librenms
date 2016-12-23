@@ -1,0 +1,29 @@
+---
+
+  - name: Create librenms apache logs
+    file:
+      path: "{{ item }}"
+      state: touch
+      owner: librenms
+      group: apache
+      setype: httpd_log_t
+      mode: 0644
+    changed_when: false
+    with_items:
+      - "{{ librenms_path }}/logs/access_log"
+      - "{{ librenms_path }}/logs/error_log"
+
+  - name: Template apache configuration
+    template:
+      src: "{{ librenms_template_path }}/librenms.conf.j2"
+      dest: /etc/httpd/conf.d/librenms.conf
+      owner: apache
+      group: librenms
+      backup: yes
+    notify:
+      - restart httpd
+
+    - name: Adding user apache to librenms group"
+      user: name=apache groups=librenms append=yes
+      notify:
+        - restart httpd

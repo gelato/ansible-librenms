@@ -1,0 +1,106 @@
+---
+
+  - name: Include os-specific variables
+    include_vars: "{{ ansible_os_family }}.yml"
+
+  - name: Include selinux tasks
+    include: selinux.yml
+    when: ansible_selinux.status is defined and (ansible_selinux.status == 'permissive' and ansible_os_family == "RedHat")
+
+  - name: Install pear modules
+    pear: name={{ item }} state=present
+    with_items: "{{ librenms_pear_modules }}"
+
+  - name: Check if librenms path exists
+    stat: path={{ librenms_path }}
+    register: librenms_stat
+
+  - name: Create librenms user
+    user:
+      name: "{{ librenms_user }}"
+      home: "{{ librenms_path }}"
+      groups: "{{ librenms_user_groups }}"
+      system: yes
+      createhome: no
+      state: present
+
+  - include: setup-redhat.yml
+    when: ansible_os_family == "RedHat"
+
+  - include: setup-debian.yml
+    when: ansible_os_family == "Debian"
+
+  - name: Checkout librenms
+    when: not librenms_stat.stat.exists
+    git: dest={{ librenms_path }} repo={{ librenms_git_url }}
+
+  - name: Set permissions on librenms path
+    when: not librenms_stat.stat.exists
+    file:
+      path: "{{ librenms_path }}"
+      state: directory
+      owner: "{{ librenms_user }}"
+      group: "{{ librenms_user }}"
+      recurse: yes
+
+  - name: Create librenms directories
+    file:
+      path: "{{ item.path }}"
+      state: directory
+      owner: "{{ item.owner }}"
+      group: "{{ item.group }}"
+      mode: "{{ item.mode }}"
+    with_items: "{{ librenms_directories }}"
+    register: librenms_dirs
+
+  - name: Template librenms configuration
+    template:
+      src: "{{ librenms_template_path }}/config.php.j2"
+      dest: "{{ librenms_path }}/config.php"
+      owner: "{{ librenms_user }}"
+      group: "{{ librenms_user }}"
+      backup: yes
+    register: librenms_installed
+
+  - name: Include MariaDB configuration
+    include: mysqlcfg.yml
+    when: librenms_installed is defined
+
+  - name: Include apache configuration
+    include: apachecfg-{{ ansible_os_family }}.yml
+    when: librenms_installed is defined
+
+  - name: Include devices addition tasks
+    include: devices.yml
+    when: librenms_installed is defined
+
+  - name: template librenms crontab
+    template:
+      src: "{{ librenms_template_path }}/librenms.cron.j2"
+      dest: /etc/cron.d/librenms
+      owner: root
+      group: root
+      mode: 0644
+      backup: yes
+
+  - name: Enable and start snmpd
+    service: name=snmpd enabled=yes state=started
+    when: librenms_installed is defined
+
+  - name: Edit snmp config
+    lineinfile:
+      dest: /etc/snmp/snmpd.conf
+      line: rocommunity public 127.0.0.1
+    notify:
+      - validate install
+      - discover localhost
+      - restart rrdcached
+      - restart apache
+
+  - name: Create librenms admin user
+    shell: >-
+      chdir={{ librenms_path }}
+      php adduser.php {{ librenms_admin_name }} {{ librenms_admin_pass }} 10 {{ librenms_admin_email }}
+    when: librenms_installed is defined
+    run_once: true
+    changed_when: false

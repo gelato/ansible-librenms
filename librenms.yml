@@ -1,0 +1,14 @@
+---
+
+  - hosts: librenms
+    become: True
+    vars_files:
+      - "vars/librenms/librenms.yml"
+    roles:
+      - role: librenms
+        tags: librenms_role
+        librenms_client_snmp_login: bootstrap
+        librenms_client_snmp_password: tpassword
+        librenms_admin_name: admin
+        librenms_admin_pass: 12345678
+      - role: apache2

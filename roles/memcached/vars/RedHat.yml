@@ -1,0 +1,13 @@
+---
+
+  memcached_packages:
+    - php
+    - php-cli
+    - php-curl
+    - php-gd
+    - php-ldap
+    - php-mcrypt
+    - php-mysql
+    - php-pear
+    - memcached.x86_64
+    - php-pecl-memcached

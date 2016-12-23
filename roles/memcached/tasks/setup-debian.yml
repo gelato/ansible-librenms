@@ -1,0 +1,21 @@
+---
+
+  - name: Install memcached and prerequisites on Debian
+    apt:
+      name: "{{ item }}"
+      state: installed
+    with_items: "{{ memcached_packages }}"
+
+  - name: Template librenms memcached
+    template:
+      src: "{{ memcached_templates_dir }}/memcached.deb.j2"
+      dest: "/etc/memcached.conf"
+      owner: root
+      group: root
+      mode: 0644
+      backup: yes
+    notify:
+      - restart memcached
+
+  - name: Enable and start memcached
+    service: name=memcached enabled=yes state=started

@@ -1,0 +1,7 @@
+---
+
+  - hosts: main
+    become: True
+
+  - include: librenms.yml
+  - include: memcached.yml

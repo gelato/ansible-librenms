@@ -1,0 +1,7 @@
+---
+
+  memcached_packages:
+    - "{{ memcached_php_version }}"
+    - php-pear
+    - php-memcached
+    - memcached

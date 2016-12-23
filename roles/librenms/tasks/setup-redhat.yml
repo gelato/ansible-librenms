@@ -1,0 +1,8 @@
+---
+
+  - name: install epel repository
+    yum: name=epel-release state=installed
+
+  - name: install prerequisites
+    yum: name={{ item }} state=installed
+    with_items: "{{ librenms_packages }}"

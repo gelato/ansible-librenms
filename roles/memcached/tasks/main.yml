@@ -1,0 +1,12 @@
+---
+
+  - name: Include os-specific variables
+    include_vars: "{{ ansible_os_family }}.yml"
+
+  - name: Include RedHat installation
+    include: setup-redhat.yml
+    when: ansible_os_family == "RedHat"
+
+  - name: Include Debian installation
+    include: setup-debian.yml
+    when: ansible_os_family == "Debian"

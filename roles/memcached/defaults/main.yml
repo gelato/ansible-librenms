@@ -1,0 +1,9 @@
+---
+
+  memcached_port: 11211
+  memcached_user: "memcached"
+  memcached_maxconn: 1024
+  memcached_cachesize: "512MB"
+  memcached_options: []
+  memcached_templates_dir: "vars/memcached/templates"
+  memcached_php_version: php

@@ -1,0 +1,22 @@
+---
+- name: restart rrdcached
+  service: name=rrdcached state=restarted
+
+- name: restart apache
+  service: name=apache2 state=restarted
+
+- name: restart httpd
+  service: name=httpd state=restarted
+
+- name: restart rrdcached
+  service: name=rrdcached state=restarted
+
+- name: validate install
+  shell: >-
+    chdir={{ librenms_path }}
+    php validate.php
+
+- name: discover localhost
+  shell: >-
+    chdir={{ librenms_path }}
+    php addhost.php localhost public v2c

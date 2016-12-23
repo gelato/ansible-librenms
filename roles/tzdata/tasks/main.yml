@@ -1,0 +1,23 @@
+---
+
+  - name: Set timezone variables
+    copy: >
+          content='{{ timezone }}\n'
+          dest=/etc/timezone
+          owner=root
+          group=root
+          mode=0644
+          backup=yes
+    when: ansible_os_family == "Debian"
+    notify:
+      - update timezone
+
+  - name: timezone - configure in RedHat
+    file:
+      src: "/usr/share/zoneinfo/{{ timezone }}"
+      dest: /etc/localtime
+      owner: root
+      group: root
+      mode: 0644
+      state: link
+    when: ansible_os_family == "RedHat"

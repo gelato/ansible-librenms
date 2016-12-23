@@ -1,0 +1,24 @@
+---
+
+  - name: install epel repository
+    yum:
+      name: epel-release
+      state: installed
+
+  - name: Install memcached and prerequisites on RedHat
+    yum:
+      name: "{{ item }}"
+      state: installed
+    with_items: "{{ memcached_packages }}"
+
+  - name: Template librenms memcached
+    template:
+      src: "{{ memcached_templates_dir }}/memcached.j2"
+      dest: "/etc/sysconfig/memcached"
+      owner: root
+      group: root
+      mode: 0644
+      backup: yes
+
+  - name: Enable and start memcached
+    service: name=memcached enabled=yes state=started
